@@ -1,12 +1,13 @@
 FROM python:3.11-slim
 
-# Установка системных зависимостей для Tesseract + кириллица
+# Установка системных зависимостей: Tesseract OCR (рус+анг), OpenGL для PyQt5, xvfb для headless
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \
     tesseract-ocr-rus \
     tesseract-ocr-eng \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
+    xvfb \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -15,8 +16,5 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-
-# Приложение требует GUI (X11/Wayland), поэтому используем xvfb
-RUN apt-get update && apt-get install -y xvfb && rm -rf /var/lib/apt/lists/*
 
 CMD ["xvfb-run", "python", "-m", "app.main"]
