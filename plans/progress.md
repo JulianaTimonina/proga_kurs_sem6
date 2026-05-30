@@ -29,16 +29,17 @@
 
 ---
 
-## Этап 3: UI (PyQt5) ⏳
+## Этап 3: UI (PyQt5) ✅
 
-**Статус:** Ожидает реализации
+**Коммит:** (текущий) — `feat: implement PyQt5 UI layer with main window, book dialogs, and QR viewer`
 
-**План:**
-- [ ] `app/ui/styles/theme.py` — стилизация
-- [ ] `app/ui/main_window.py` — главное окно
-- [ ] `app/ui/add_book_dialog.py` — добавление книги
-- [ ] `app/ui/book_card_dialog.py` — карточка книги
-- [ ] `app/ui/qr_view_dialog.py` — просмотр QR
+**Что сделано:**
+- Реализован [`app/ui/styles/theme.py`](../app/ui/styles/theme.py) — современная светлая QSS-стилизация (кнопки, поля, таблица, скроллбары, группы)
+- Реализован [`app/ui/main_window.py`](../app/ui/main_window.py) — главное окно с таблицей книг (`QTableView`), поиском по всем полям, фильтрацией по году/УДК/ББК, сортировкой по колонкам, двойным кликом для открытия карточки
+- Реализован [`app/ui/add_book_dialog.py`](../app/ui/add_book_dialog.py) — диалог добавления книги с поддержкой OCR: загрузка фото → распознавание → автозаполнение полей из Open Library API
+- Реализован [`app/ui/book_card_dialog.py`](../app/ui/book_card_dialog.py) — карточка книги с двумя режимами (просмотр/редактирование), удалением с подтверждением, созданием и просмотром QR-кода
+- Реализован [`app/ui/qr_view_dialog.py`](../app/ui/qr_view_dialog.py) — диалог просмотра QR-кода с масштабированием, информацией о файле и сохранением в PNG
+- **Все 94 теста проходят**
 
 ---
 
