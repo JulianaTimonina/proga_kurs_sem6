@@ -42,22 +42,35 @@ class OcrService:
             Распознанный текст или None при ошибке.
         """
         if not self._tesseract_available:
+            print("[OCR] Tesseract недоступен (не установлен или не в PATH)")
             return None
 
         try:
             import pytesseract
 
             # Загрузка изображения
+            print(f"[OCR] Загрузка изображения: {image_path}")
             image = Image.open(image_path)
+            print(f"[OCR] Изображение загружено: {image.size}, режим: {image.mode}")
 
             # Предобработка
+            print("[OCR] Предобработка изображения...")
             processed = self._preprocess_image(image)
+            print(f"[OCR] После предобработки: {processed.size}, режим: {processed.mode}")
 
             # Распознавание текста
+            print(f"[OCR] Запуск Tesseract (lang={self._lang})...")
             text = pytesseract.image_to_string(processed, lang=self._lang)
+            print(f"[OCR] Tesseract вернул {len(text)} символов")
+            if text.strip():
+                print(f"[OCR] Распознанный текст (первые 200 символов): {text.strip()[:200]}")
+            else:
+                print("[OCR] Tesseract не распознал текст (пустой результат)")
+
             return text.strip() if text.strip() else None
 
-        except Exception:
+        except Exception as e:
+            print(f"[OCR] ОШИБКА: {type(e).__name__}: {e}")
             return None
 
     def _preprocess_image(self, image: Image.Image) -> Image.Image:

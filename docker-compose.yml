@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  library-catalog:
+    build: .
+    volumes:
+      - ./data:/app/data          # Для сохранения БД и QR-кодов
+      - /tmp/.X11-unix:/tmp/.X11-unix  # Для GUI (Linux)
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      - TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
+    stdin_open: true
+    tty: true

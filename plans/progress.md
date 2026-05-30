@@ -56,13 +56,16 @@
 
 ---
 
-## Этап 5: Инфраструктура ⏳
+## Этап 5: Инфраструктура ✅
 
-**Статус:** Ожидает реализации
+**Коммит:** (текущий) — `feat: add infrastructure files, Docker setup, SAST config, and README`
 
-**План:**
-- [ ] `requirements.txt`
-- [ ] `Dockerfile` и `docker-compose.yml`
-- [ ] `.bandit.yml`
-- [ ] `README.md`
-- [ ] Финальное тестирование и SAST
+**Что сделано:**
+- Создан [`requirements.txt`](../requirements.txt) — все зависимости проекта (PyQt5, pytesseract, Pillow, requests, qrcode, pytest, bandit, pip-audit)
+- Создан [`Dockerfile`](../Dockerfile) — образ на базе `python:3.11-slim` с Tesseract OCR (rus+eng), xvfb для headless-запуска GUI
+- Создан [`docker-compose.yml`](../docker-compose.yml) — сервис с пробросом томов для данных и X11 для GUI
+- Создан [`.bandit.yml`](../.bandit.yml) — конфигурация SAST с исключением B101 (assert)
+- Написан [`README.md`](../README.md) — полная документация: возможности, установка, запуск, тестирование, SAST, структура проекта
+- Выполнено финальное тестирование: **127 тестов проходят**
+- Выполнена SAST-проверка Bandit: **0 issues** (подавлен false positive B608 через `# nosec`)
+- **Все 127 тестов проходят, Bandit — чисто**

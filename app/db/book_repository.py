@@ -101,7 +101,7 @@ class BookRepository:
         where_clause = " AND ".join(conditions)
         conn = self._db.get_connection()
         cursor = conn.execute(
-            f"SELECT * FROM books WHERE {where_clause} ORDER BY id",
+            f"SELECT * FROM books WHERE {where_clause} ORDER BY id",  # nosec - имена колонок фиксированы, значения через параметры
             params,
         )
         return [self._row_to_book(row) for row in cursor.fetchall()]

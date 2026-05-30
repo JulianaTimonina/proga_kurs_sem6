@@ -1,5 +1,27 @@
-__pycache__/  
-*.pyc  
-.pytest_cache/ 
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
 
-заметки.txt 
+# IDE
+.vscode/
+.idea/
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Project data (runtime)
+data/library.db
+data/qr_codes/
+
+# OS
+Thumbs.db
+.DS_Store
+
+*.jpg
