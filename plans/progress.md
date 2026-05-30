@@ -43,15 +43,16 @@
 
 ---
 
-## Этап 4: Контроллеры и интеграция ⏳
+## Этап 4: Контроллеры и интеграция ✅
 
-**Статус:** Ожидает реализации
+**Коммит:** (текущий) — `feat: implement controllers layer, application entry point, and integration tests`
 
-**План:**
-- [ ] `app/controllers/catalog_controller.py`
-- [ ] `app/controllers/book_controller.py`
-- [ ] `app/main.py` — точка входа
-- [ ] Интеграционное тестирование
+**Что сделано:**
+- Реализован [`app/controllers/catalog_controller.py`](../app/controllers/catalog_controller.py) — контроллер каталога: загрузка, поиск, фильтрация, удаление книг с подтверждением
+- Реализован [`app/controllers/book_controller.py`](../app/controllers/book_controller.py) — контроллер книги: получение, сохранение, обновление, OCR-пайплайн, генерация QR
+- Реализован [`app/main.py`](../app/main.py) — точка входа: инициализация БД, сервисов, контроллеров и UI; поддержка переменных окружения `LIBRARY_DB_PATH` и `LIBRARY_QR_DIR`
+- Написаны тесты: [`tests/test_controllers.py`](../tests/test_controllers.py) (22 теста для CatalogController и BookController), [`tests/test_main.py`](../tests/test_main.py) (9 тестов для инициализации)
+- **Все 127 тестов проходят**
 
 ---
 
