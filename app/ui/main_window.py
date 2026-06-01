@@ -206,6 +206,7 @@ class MainWindow(QMainWindow):
         self._table.setSelectionMode(QTableView.SingleSelection)
         self._table.setAlternatingRowColors(True)
         self._table.setShowGrid(True)
+        self._table.setEditTriggers(QTableView.NoEditTriggers)
         self._table.verticalHeader().hide()
         self._table.horizontalHeader().setStretchLastSection(True)
         self._table.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
