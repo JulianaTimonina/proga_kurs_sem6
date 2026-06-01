@@ -61,7 +61,8 @@ class BookService:
     def update_book(self, book: Book) -> None:
         """Обновляет существующую книгу.
 
-        Если у книги был QR-код, пересоздаёт его с новыми данными.
+        Если у книги был QR-код, удаляет его — данные книги могли
+        измениться, поэтому старый QR-код более не актуален.
 
         Args:
             book: Объект книги с обновлёнными полями.
@@ -74,13 +75,27 @@ class BookService:
         if not book.title.strip():
             raise ValueError("Название не может быть пустым")
 
-        # Если у книги был QR-код, пересоздаём его
+        # Если у книги был QR-код, удаляем его — данные изменились
         if book.qr_path:
             self._qr.delete_qr(book.qr_path)
-            new_qr_path = self._qr.generate_qr(book.id, book.isbn)
-            if new_qr_path:
-                book.qr_path = new_qr_path
+            book.qr_path = None
 
+        self._repo.update(book)
+
+    def set_qr_path(self, book_id: int, qr_path: str) -> None:
+        """Сохраняет путь к QR-коду для книги.
+
+        Выполняет прямой UPDATE поля qr_path, минуя update_book(),
+        чтобы не сработала логика удаления QR при редактировании.
+
+        Args:
+            book_id: ID книги.
+            qr_path: Путь к файлу QR-кода.
+        """
+        book = self._repo.get_by_id(book_id)
+        if book is None:
+            return
+        book.qr_path = qr_path
         self._repo.update(book)
 
     def delete_book(self, book_id: int) -> None:

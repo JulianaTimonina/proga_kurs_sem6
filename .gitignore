@@ -24,4 +24,5 @@ data/qr_codes/
 Thumbs.db
 .DS_Store
 
+*.jpg*.png
 *.jpg

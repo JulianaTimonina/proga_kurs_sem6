@@ -97,16 +97,15 @@ class TestBookService:
             service.update_book(sample_book)
 
     def test_update_book_with_qr(self, service, mock_repo, mock_qr, sample_book):
-        """Проверяет обновление с пересозданием QR."""
+        """Проверяет обновление с удалением QR (данные изменились)."""
         sample_book.id = 1
         sample_book.qr_path = "/old/path/qr.png"
-        mock_qr.generate_qr.return_value = "/new/path/qr.png"
 
         service.update_book(sample_book)
 
         mock_qr.delete_qr.assert_called_once_with("/old/path/qr.png")
-        mock_qr.generate_qr.assert_called_once_with(1, "9785171234567")
-        assert sample_book.qr_path == "/new/path/qr.png"
+        mock_qr.generate_qr.assert_not_called()
+        assert sample_book.qr_path is None
         mock_repo.update.assert_called_once_with(sample_book)
 
     def test_update_book_without_qr(self, service, mock_repo, mock_qr, sample_book):

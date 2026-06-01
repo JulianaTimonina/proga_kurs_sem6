@@ -245,7 +245,7 @@ class BookService:
         """Создать книгу (валидация + сохранение)."""
     
     def update_book(self, book: Book) -> None:
-        """Обновить книгу + пересоздать QR если был."""
+        """Обновить книгу + удалить QR-код если был (данные могли измениться)."""
     
     def delete_book(self, book_id: int) -> None:
         """Удалить книгу + удалить QR-файл."""
@@ -463,9 +463,7 @@ sequenceDiagram
     
     alt У книги был QR-код
         Svc->>QR: delete_qr(old_path)
-        Svc->>QR: generate_qr(book_id, isbn, output_dir)
-        QR-->>Svc: new_qr_path
-        Svc->>book.qr_path: new_qr_path
+        Svc->>book.qr_path: None  # обнуляем путь — QR больше не актуален
     end
     
     Svc->>Repo: update(book)
@@ -710,3 +708,7 @@ pip-audit>=2.7.0
 23. Создать [`.bandit.yml`](.bandit.yml).
 24. Написать [`README.md`](README.md) с инструкциями.
 25. Финальное тестирование и проверка SAST.
+
+### Этап 6: Доработка логики QR-кодов
+26. **Исправить [`app/services/book_service.py`](app/services/book_service.py):** в методе `update_book()` — удалять QR-файл и обнулять `qr_path` в объекте книги, **не создавая** новый QR-код. Данные книги могли измениться (ISBN, автор и т.д.), поэтому старый QR-код более не актуален.
+27. **Исправить [`app/ui/book_card_dialog.py`](app/ui/book_card_dialog.py):** в методе `_populate_fields()` — добавить проверку физического существования файла QR-кода через `os.path.exists()`. Надпись "✅ QR-код" показывать только если файл реально существует на диске, а не только путь в БД.

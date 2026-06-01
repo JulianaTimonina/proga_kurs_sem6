@@ -5,6 +5,7 @@
 - Редактирование: поля разблокированы, кнопки: Сохранить, Отмена.
 """
 
+import os
 from typing import Optional
 
 from PyQt5.QtCore import Qt
@@ -205,8 +206,8 @@ class BookCardDialog(QDialog):
         self._author_mark_input.setText(self._book.author_mark or "")
         self._quantity_input.setValue(self._book.quantity)
 
-        # Информация о QR
-        if self._book.qr_path:
+        # Информация о QR — проверяем реальное существование файла
+        if self._book.qr_path and os.path.exists(self._book.qr_path):
             self._qr_info.setText(f"✅ QR-код: {self._book.qr_path}")
             self._qr_info.setStyleSheet("color: #27ae60;")
         else:
@@ -288,7 +289,10 @@ class BookCardDialog(QDialog):
 
         try:
             self._book_service.update_book(self._book)
-            QMessageBox.information(self, "Успех", "Книга успешно обновлена.")
+            # Перезагружаем книгу из БД, чтобы получить актуальное состояние
+            # (например, обнулённый qr_path после удаления QR-кода)
+            self._book = self._book_service.get_book(self._book_id)
+            self._populate_fields()
             self._set_mode(self.MODE_VIEW)
         except ValueError as e:
             QMessageBox.warning(self, "Ошибка валидации", str(e))
@@ -332,7 +336,7 @@ class BookCardDialog(QDialog):
                 )
                 if qr_path:
                     self._book.qr_path = qr_path
-                    self._book_service.update_book(self._book)
+                    self._book_service.set_qr_path(self._book.id, qr_path)
                     self._populate_fields()
                 else:
                     QMessageBox.warning(
