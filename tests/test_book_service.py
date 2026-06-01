@@ -269,3 +269,25 @@ class TestBookService:
 
         mock_repo.get_all.assert_called_once()
         assert len(results) == 2
+
+    # --- set_qr_path ---
+
+    def test_set_qr_path_success(self, service, mock_repo, sample_book):
+        """Проверяет успешное сохранение пути QR-кода."""
+        sample_book.id = 1
+        mock_repo.get_by_id.return_value = sample_book
+
+        service.set_qr_path(1, "/path/qr_book_1.png")
+
+        mock_repo.get_by_id.assert_called_once_with(1)
+        assert sample_book.qr_path == "/path/qr_book_1.png"
+        mock_repo.update.assert_called_once_with(sample_book)
+
+    def test_set_qr_path_book_not_found(self, service, mock_repo):
+        """Проверяет set_qr_path когда книга не найдена."""
+        mock_repo.get_by_id.return_value = None
+
+        service.set_qr_path(999, "/path/qr.png")
+
+        mock_repo.get_by_id.assert_called_once_with(999)
+        mock_repo.update.assert_not_called()

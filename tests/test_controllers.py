@@ -280,16 +280,16 @@ class TestBookController:
 
     def test_generate_qr_success(self, controller, mock_book_service):
         """Проверяет успешную генерацию QR-кода."""
-        mock_book_service._qr.generate_qr.return_value = "/path/qr_book_1.png"
+        mock_book_service.generate_qr.return_value = "/path/qr_book_1.png"
 
         result = controller.generate_qr(1, "9785171234567")
 
-        mock_book_service._qr.generate_qr.assert_called_once_with(1, "9785171234567")
+        mock_book_service.generate_qr.assert_called_once_with(1, "9785171234567")
         assert result == "/path/qr_book_1.png"
 
     def test_generate_qr_error(self, controller, mock_book_service):
         """Проверяет ошибку при генерации QR-кода."""
-        mock_book_service._qr.generate_qr.side_effect = Exception("QR error")
+        mock_book_service.generate_qr.side_effect = Exception("QR error")
 
         result = controller.generate_qr(1, "9785171234567")
 
@@ -297,9 +297,9 @@ class TestBookController:
 
     def test_generate_qr_without_isbn(self, controller, mock_book_service):
         """Проверяет генерацию QR-кода без ISBN."""
-        mock_book_service._qr.generate_qr.return_value = "/path/qr_book_2.png"
+        mock_book_service.generate_qr.return_value = "/path/qr_book_2.png"
 
         result = controller.generate_qr(2, None)
 
-        mock_book_service._qr.generate_qr.assert_called_once_with(2, None)
+        mock_book_service.generate_qr.assert_called_once_with(2, None)
         assert result == "/path/qr_book_2.png"

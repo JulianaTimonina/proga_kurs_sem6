@@ -158,3 +158,47 @@ class TestMain:
         with patch('app.main.run_app') as mock_run:
             main()
             mock_run.assert_called_once()
+
+    def test_run_app_success(self):
+        """Проверяет успешный запуск приложения с мокированием GUI."""
+        from app.main import run_app
+
+        with patch('app.main.QApplication') as mock_qapp:
+            mock_app_instance = MagicMock()
+            mock_qapp.return_value = mock_app_instance
+
+            with patch('app.main.get_db_path') as mock_db_path:
+                mock_db_path.return_value = ":memory:"
+
+                with patch('app.main.get_qr_output_dir') as mock_qr_dir:
+                    mock_qr_dir.return_value = "data/qr_codes"
+
+                    with patch('app.main.create_services') as mock_create_svc:
+                        mock_book_service = MagicMock()
+                        mock_create_svc.return_value = mock_book_service
+
+                        with patch('app.main.create_controllers') as mock_create_ctrl:
+                            mock_catalog_ctrl = MagicMock()
+                            mock_book_ctrl = MagicMock()
+                            mock_create_ctrl.return_value = (
+                                mock_catalog_ctrl, mock_book_ctrl
+                            )
+
+                            with patch('app.main.MainWindow') as mock_main_window:
+                                mock_window = MagicMock()
+                                mock_main_window.return_value = mock_window
+
+                                with patch('app.main.apply_theme'):
+                                    # run_app вызывает sys.exit(app.exec_()),
+                                    # что выбрасывает SystemExit
+                                    with pytest.raises(SystemExit):
+                                        run_app()
+
+                                    # Проверяем, что MainWindow создан с book_service
+                                    mock_main_window.assert_called_once_with(
+                                        mock_book_service
+                                    )
+                                    # Проверяем, что окно показано
+                                    mock_window.show.assert_called_once()
+                                    # Проверяем, что app.exec_() вызван
+                                    mock_app_instance.exec_.assert_called_once()

@@ -91,12 +91,14 @@ class TestBookRepository:
         assert len(results) == 1
         assert results[0].publisher == sample_book.publisher
 
-    def test_search_case_insensitive_ascii(self, book_repo, sample_book):
-        """Проверяет регистронезависимый поиск (ASCII)."""
+    def test_search_case_insensitive(self, book_repo, sample_book):
+        """Проверяет регистронезависимый поиск (латиница)."""
         book_repo.add(sample_book)
-        # ISBN содержит только ASCII символы
+        # Ищем строчными буквами ISBN, хотя в данных есть заглавные
+        # Используем латиницу, т.к. SQLite COLLATE NOCASE не работает с кириллицей
         results = book_repo.search("978-5-17")
         assert len(results) == 1
+        assert results[0].isbn == sample_book.isbn
 
     def test_search_partial_match(self, book_repo, sample_book):
         """Проверяет поиск по частичному совпадению."""

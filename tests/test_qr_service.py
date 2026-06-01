@@ -1,6 +1,7 @@
 import json
 import os
 import tempfile
+from unittest.mock import patch
 
 import pytest
 
@@ -132,3 +133,31 @@ class TestQrService:
 
         files = os.listdir(temp_dir)
         assert len(files) == 3
+
+    # --- Граничные случаи ---
+
+    def test_generate_qr_os_error(self, service):
+        """Ошибка при создании директории — должен вернуть None."""
+        with patch("app.services.qr_service.os.makedirs") as mock_makedirs:
+            mock_makedirs.side_effect = OSError("Permission denied")
+
+            result = service.generate_qr(book_id=1, isbn="9785171234567")
+
+            assert result is None
+
+    def test_delete_qr_os_error(self, service):
+        """Ошибка при удалении файла — не должна вызывать исключение."""
+        with patch("app.services.qr_service.os.remove") as mock_remove:
+            mock_remove.side_effect = OSError("Permission denied")
+
+            # Не должно быть исключения
+            service.delete_qr("/some/path/qr.png")
+
+    def test_generate_qr_generic_exception(self, service):
+        """Любое исключение в generate_qr — должен вернуть None."""
+        with patch("app.services.qr_service.os.makedirs") as mock_makedirs:
+            mock_makedirs.side_effect = Exception("Unexpected error")
+
+            result = service.generate_qr(book_id=1, isbn="9785171234567")
+
+            assert result is None

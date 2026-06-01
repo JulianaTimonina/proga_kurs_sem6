@@ -90,6 +90,6 @@ class BookController:
             Путь к сгенерированному файлу QR-кода или None в случае ошибки.
         """
         try:
-            return self._book_service._qr.generate_qr(book_id, isbn)
+            return self._book_service.generate_qr(book_id, isbn)
         except Exception:
             return None

@@ -712,3 +712,15 @@ pip-audit>=2.7.0
 ### Этап 6: Доработка логики QR-кодов
 26. **Исправить [`app/services/book_service.py`](app/services/book_service.py):** в методе `update_book()` — удалять QR-файл и обнулять `qr_path` в объекте книги, **не создавая** новый QR-код. Данные книги могли измениться (ISBN, автор и т.д.), поэтому старый QR-код более не актуален.
 27. **Исправить [`app/ui/book_card_dialog.py`](app/ui/book_card_dialog.py):** в методе `_populate_fields()` — добавить проверку физического существования файла QR-кода через `os.path.exists()`. Надпись "✅ QR-код" показывать только если файл реально существует на диске, а не только путь в БД.
+
+---
+
+### Этап 7: Повышение тестового покрытия до 85%+ (бизнес-логика)
+
+28. **Создать [`tests/test_api_service.py`](tests/test_api_service.py):** тесты для `ApiService` с мокированием `requests.get` — успешный ответ, отсутствие полей, таймаут, HTTP-ошибки, ошибка соединения, невалидный JSON, пустой ISBN. Тесты для `_map_response()` — полный ответ, авторы-строки, извлечение года, отсутствие года, издательство-строка.
+29. **Создать [`tests/test_ocr_service.py`](tests/test_ocr_service.py):** тесты для `OcrService` с мокированием `pytesseract` и `PIL.Image.open` — успешное распознавание, пустой результат, недоступный Tesseract, ошибка изображения, ошибка Tesseract. Тесты для `_preprocess_image()` — проверка преобразований.
+30. **Добавить тесты в [`tests/test_book_service.py`](tests/test_book_service.py):** тесты для `set_qr_path()` — успешное сохранение и книга не найдена.
+31. **Добавить тесты в [`tests/test_qr_service.py`](tests/test_qr_service.py):** тесты для граничных случаев — `ImportError` при отсутствии `qrcode`, `OSError` при создании директории, `OSError` при удалении файла.
+32. **Добавить тесты в [`tests/test_main.py`](tests/test_main.py):** тест `test_run_app_success` — успешный запуск с мокированием `MainWindow`.
+33. **Исправить [`tests/test_book_repository.py`](tests/test_book_repository.py):** переименовать `test_search_case_insensitive_ascii` в `test_search_by_isbn_partial` — текущий тест не проверяет регистронезависимость, т.к. ISBN состоит из цифр.
+34. **Исправить [`tests/test_controllers.py`](tests/test_controllers.py):** изменить `test_generate_qr_success` — убрать обращение к protected-атрибуту `_qr`, добавить публичный метод `generate_qr()` в `BookService` или тестировать через существующий API.

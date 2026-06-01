@@ -196,3 +196,15 @@ class BookService:
             Список всех книг.
         """
         return self._repo.get_all()
+
+    def generate_qr(self, book_id: int, isbn: Optional[str]) -> Optional[str]:
+        """Генерирует QR-код для книги.
+
+        Args:
+            book_id: ID книги.
+            isbn: ISBN книги (может быть None).
+
+        Returns:
+            Путь к сгенерированному файлу QR-кода или None при ошибке.
+        """
+        return self._qr.generate_qr(book_id, isbn)
