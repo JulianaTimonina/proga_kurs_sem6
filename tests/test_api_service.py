@@ -26,17 +26,19 @@ class TestApiService:
         """Успешный ответ API с полными данными."""
         mock_response = MagicMock()
         mock_response.json.return_value = {
-            "title": "War and Peace",
-            "authors": [{"name": "Leo Tolstoy"}],
-            "publishers": ["AST"],
-            "publish_date": "2023",
+            "ISBN:9785171234567": {
+                "title": "War and Peace",
+                "authors": [{"name": "Leo Tolstoy"}],
+                "publishers": [{"name": "AST"}],
+                "publish_date": "2023",
+            }
         }
         mock_get.return_value = mock_response
 
         result = service.fetch_book_by_isbn("9785171234567")
 
         mock_get.assert_called_once_with(
-            "https://openlibrary.org/isbn/9785171234567.json",
+            "https://openlibrary.org/api/books?bibkeys=ISBN:9785171234567&format=json&jscmd=data",
             timeout=5,
         )
         assert result is not None
@@ -50,9 +52,11 @@ class TestApiService:
         """Ответ API без поля authors."""
         mock_response = MagicMock()
         mock_response.json.return_value = {
-            "title": "Book Without Authors",
-            "publishers": ["Publisher"],
-            "publish_date": "2022",
+            "ISBN:9785171234567": {
+                "title": "Book Without Authors",
+                "publishers": [{"name": "Publisher"}],
+                "publish_date": "2022",
+            }
         }
         mock_get.return_value = mock_response
 
@@ -66,9 +70,11 @@ class TestApiService:
         """Ответ API без поля publishers."""
         mock_response = MagicMock()
         mock_response.json.return_value = {
-            "title": "Book Without Publishers",
-            "authors": [{"name": "Author"}],
-            "publish_date": "2022",
+            "ISBN:9785171234567": {
+                "title": "Book Without Publishers",
+                "authors": [{"name": "Author"}],
+                "publish_date": "2022",
+            }
         }
         mock_get.return_value = mock_response
 
@@ -82,9 +88,11 @@ class TestApiService:
         """Ответ API без поля publish_date."""
         mock_response = MagicMock()
         mock_response.json.return_value = {
-            "title": "Book Without Date",
-            "authors": [{"name": "Author"}],
-            "publishers": ["Publisher"],
+            "ISBN:9785171234567": {
+                "title": "Book Without Date",
+                "authors": [{"name": "Author"}],
+                "publishers": [{"name": "Publisher"}],
+            }
         }
         mock_get.return_value = mock_response
 
@@ -150,12 +158,14 @@ class TestApiService:
     def test_map_response_full(self, service):
         """Полный ответ со всеми полями."""
         data = {
-            "title": "War and Peace",
-            "authors": [{"name": "Leo Tolstoy"}],
-            "publishers": ["AST"],
-            "publish_date": "2023-05-15",
+            "ISBN:9785171234567": {
+                "title": "War and Peace",
+                "authors": [{"name": "Leo Tolstoy"}],
+                "publishers": [{"name": "AST"}],
+                "publish_date": "2023-05-15",
+            }
         }
-        result = service._map_response(data)
+        result = service._map_response(data, "9785171234567")
 
         assert result["title"] == "War and Peace"
         assert result["author"] == "Leo Tolstoy"
@@ -165,81 +175,101 @@ class TestApiService:
     def test_map_response_authors_as_strings(self, service):
         """Авторы в виде списка строк."""
         data = {
-            "title": "Book",
-            "authors": ["Author One", "Author Two"],
-            "publishers": ["Publisher"],
-            "publish_date": "2023",
+            "ISBN:9785171234567": {
+                "title": "Book",
+                "authors": ["Author One", "Author Two"],
+                "publishers": [{"name": "Publisher"}],
+                "publish_date": "2023",
+            }
         }
-        result = service._map_response(data)
+        result = service._map_response(data, "9785171234567")
 
         assert result["author"] == "Author One, Author Two"
 
     def test_map_response_multiple_authors(self, service):
         """Несколько авторов через запятую."""
         data = {
-            "title": "Book",
-            "authors": [{"name": "Author A"}, {"name": "Author B"}],
-            "publishers": ["Publisher"],
-            "publish_date": "2023",
+            "ISBN:9785171234567": {
+                "title": "Book",
+                "authors": [{"name": "Author A"}, {"name": "Author B"}],
+                "publishers": [{"name": "Publisher"}],
+                "publish_date": "2023",
+            }
         }
-        result = service._map_response(data)
+        result = service._map_response(data, "9785171234567")
 
         assert result["author"] == "Author A, Author B"
 
     def test_map_response_year_extraction(self, service):
         """Извлечение года из строки даты."""
         data = {
-            "title": "Book",
-            "authors": [{"name": "Author"}],
-            "publishers": ["Publisher"],
-            "publish_date": "2023-05-15",
+            "ISBN:9785171234567": {
+                "title": "Book",
+                "authors": [{"name": "Author"}],
+                "publishers": [{"name": "Publisher"}],
+                "publish_date": "2023-05-15",
+            }
         }
-        result = service._map_response(data)
+        result = service._map_response(data, "9785171234567")
 
         assert result["year"] == 2023
 
     def test_map_response_year_missing(self, service):
         """Отсутствие года — должен быть None."""
         data = {
-            "title": "Book",
-            "authors": [{"name": "Author"}],
-            "publishers": ["Publisher"],
+            "ISBN:9785171234567": {
+                "title": "Book",
+                "authors": [{"name": "Author"}],
+                "publishers": [{"name": "Publisher"}],
+            }
         }
-        result = service._map_response(data)
+        result = service._map_response(data, "9785171234567")
 
         assert result["year"] is None
 
     def test_map_response_year_no_digits(self, service):
         """Дата без цифр года — должен быть None."""
         data = {
-            "title": "Book",
-            "authors": [{"name": "Author"}],
-            "publishers": ["Publisher"],
-            "publish_date": "unknown",
+            "ISBN:9785171234567": {
+                "title": "Book",
+                "authors": [{"name": "Author"}],
+                "publishers": [{"name": "Publisher"}],
+                "publish_date": "unknown",
+            }
         }
-        result = service._map_response(data)
+        result = service._map_response(data, "9785171234567")
 
         assert result["year"] is None
 
     def test_map_response_publisher_string(self, service):
         """Издательство как строка."""
         data = {
-            "title": "Book",
-            "authors": [{"name": "Author"}],
-            "publishers": ["Some Publisher"],
-            "publish_date": "2023",
+            "ISBN:9785171234567": {
+                "title": "Book",
+                "authors": [{"name": "Author"}],
+                "publishers": ["Some Publisher"],
+                "publish_date": "2023",
+            }
         }
-        result = service._map_response(data)
+        result = service._map_response(data, "9785171234567")
 
         assert result["publisher"] == "Some Publisher"
 
     def test_map_response_no_title(self, service):
         """Отсутствие названия — пустая строка."""
         data = {
-            "authors": [{"name": "Author"}],
-            "publishers": ["Publisher"],
-            "publish_date": "2023",
+            "ISBN:9785171234567": {
+                "authors": [{"name": "Author"}],
+                "publishers": [{"name": "Publisher"}],
+                "publish_date": "2023",
+            }
         }
-        result = service._map_response(data)
+        result = service._map_response(data, "9785171234567")
 
         assert result["title"] == ""
+
+    def test_map_response_empty_book_data(self, service):
+        """Пустой ответ API (нет ключа ISBN) — пустой словарь."""
+        data = {}
+        result = service._map_response(data, "9785171234567")
+        assert result == {}

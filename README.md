@@ -114,7 +114,7 @@ pytest tests/test_book_repository.py -v
 
 ### Текущее покрытие
 
-Всего тестов: **127+** (все проходят)
+Всего тестов: **164** (все проходят)
 
 | Модуль | Тесты |
 |--------|-------|
@@ -123,6 +123,8 @@ pytest tests/test_book_repository.py -v
 | isbn_service | 18 |
 | qr_service | 12 |
 | book_service | 22 |
+| api_service | 20 |
+| ocr_service | 11 |
 | controllers | 22 |
 | main | 9 |
 

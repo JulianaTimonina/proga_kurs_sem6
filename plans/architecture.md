@@ -47,7 +47,11 @@ library_catalog/
 │   ├── test_book_repository.py   # Тесты CRUD и поиска
 │   ├── test_isbn_service.py      # Тесты извлечения ISBN из текста
 │   ├── test_qr_service.py        # Тесты генерации QR-кодов
-│   └── test_book_service.py      # Тесты бизнес-логики
+│   ├── test_api_service.py       # Тесты Open Library API
+│   ├── test_ocr_service.py       # Тесты OCR-распознавания
+│   ├── test_book_service.py      # Тесты бизнес-логики
+│   ├── test_controllers.py       # Тесты контроллеров
+│   └── test_main.py              # Тесты точки входа
 │
 ├── resources/                    # Ресурсы (иконки, примеры изображений)
 │   └── sample/                   # Примеры изображений для тестирования OCR
@@ -203,7 +207,7 @@ class ApiService:
     def fetch_book_by_isbn(self, isbn: str) -> Optional[dict]:
         """
         Запрашивает метаданные книги через Open Library API.
-        URL: https://openlibrary.org/isbn/{isbn}.json
+        URL: https://openlibrary.org/api/books?bibkeys=ISBN:{isbn}&format=json&jscmd=data
         Возвращает словарь с полями: author, title, publisher, year
         или None при ошибке/недоступности.
         """
@@ -213,6 +217,7 @@ class ApiService:
 - Обработка таймаута (5 сек).
 - Обработка HTTP-ошибок (404, 503 и т.д.).
 - Маппинг ответа API на поля книги.
+- Использует Books API (`/api/books`) с параметром `jscmd=data`, который возвращает полные метаданные, включая имена авторов (в отличие от `/isbn/{isbn}.json`, который возвращает только ключи авторов).
 
 ### 5.4. [`app/services/qr_service.py`](app/services/qr_service.py) — Генерация QR
 
