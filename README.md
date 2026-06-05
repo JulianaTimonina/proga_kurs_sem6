@@ -121,12 +121,12 @@ pytest tests/test_book_repository.py -v
 | database | 8 |
 | book_repository | 34 |
 | isbn_service | 18 |
-| qr_service | 12 |
-| book_service | 22 |
+| qr_service | 15 |
+| book_service | 24 |
 | api_service | 20 |
 | ocr_service | 11 |
-| controllers | 22 |
-| main | 9 |
+| controllers | 24 |
+| main | 10 |
 
 ## SAST-проверки
 
